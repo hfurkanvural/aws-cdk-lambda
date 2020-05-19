@@ -1,0 +1,1041 @@
+Resources:
+  GreetingsHandlerServiceRole92A528F4:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: todo-lambda/GreetingsHandler/ServiceRole/Resource
+  GreetingsHandlerE3BC49D5:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket:
+          Ref: AssetParameters4eae9a3a9376973c83a7918f98c733f02759562997922df7957cd2e72355c143S3Bucket70D48462
+        S3Key:
+          Fn::Join:
+            - ""
+            - - Fn::Select:
+                  - 0
+                  - Fn::Split:
+                      - "||"
+                      - Ref: AssetParameters4eae9a3a9376973c83a7918f98c733f02759562997922df7957cd2e72355c143S3VersionKey132F2472
+              - Fn::Select:
+                  - 1
+                  - Fn::Split:
+                      - "||"
+                      - Ref: AssetParameters4eae9a3a9376973c83a7918f98c733f02759562997922df7957cd2e72355c143S3VersionKey132F2472
+      Handler: greetings.greet
+      Role:
+        Fn::GetAtt:
+          - GreetingsHandlerServiceRole92A528F4
+          - Arn
+      Runtime: python3.7
+      MemorySize: 128
+    DependsOn:
+      - GreetingsHandlerServiceRole92A528F4
+    Metadata:
+      aws:cdk:path: todo-lambda/GreetingsHandler/Resource
+      aws:asset:path: /Users/hfv/Desktop/dev/dev-projects/todo-lambda/lambda
+      aws:asset:property: Code
+  EndpointEEF1FD8F:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: Endpoint
+    Metadata:
+      aws:cdk:path: todo-lambda/Endpoint/Resource
+  EndpointCloudWatchRoleC3C64E0F:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: apigateway.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs
+    Metadata:
+      aws:cdk:path: todo-lambda/Endpoint/CloudWatchRole/Resource
+  EndpointAccountB8304247:
+    Type: AWS::ApiGateway::Account
+    Properties:
+      CloudWatchRoleArn:
+        Fn::GetAtt:
+          - EndpointCloudWatchRoleC3C64E0F
+          - Arn
+    DependsOn:
+      - EndpointEEF1FD8F
+    Metadata:
+      aws:cdk:path: todo-lambda/Endpoint/Account
+  EndpointDeployment318525DA865dfa4531feec346ca2c0d53dede64d:
+    Type: AWS::ApiGateway::Deployment
+    Properties:
+      RestApiId:
+        Ref: EndpointEEF1FD8F
+      Description: Automatically created by the RestApi construct
+    DependsOn:
+      - EndpointproxyANYC09721C5
+      - Endpointproxy39E2174E
+      - EndpointANY485C938B
+      - EndpointtodotodoIdDELETEEA229534
+      - EndpointtodotodoIdGET666D8236
+      - EndpointtodotodoIdC519507C
+      - EndpointtodonewPUT7841568F
+      - EndpointtodonewF6D45752
+      - Endpointtodo0F6DA600
+      - EndpointtodosGET5442C6DC
+      - Endpointtodos176EC032
+    Metadata:
+      aws:cdk:path: todo-lambda/Endpoint/Deployment/Resource
+  EndpointDeploymentStagedev8EA049F3:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      RestApiId:
+        Ref: EndpointEEF1FD8F
+      DeploymentId:
+        Ref: EndpointDeployment318525DA865dfa4531feec346ca2c0d53dede64d
+      StageName: dev
+    Metadata:
+      aws:cdk:path: todo-lambda/Endpoint/DeploymentStage.dev/Resource
+  Endpointproxy39E2174E:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId:
+        Fn::GetAtt:
+          - EndpointEEF1FD8F
+          - RootResourceId
+      PathPart: "{proxy+}"
+      RestApiId:
+        Ref: EndpointEEF1FD8F
+    Metadata:
+      aws:cdk:path: todo-lambda/Endpoint/Default/{proxy+}/Resource
+  EndpointproxyANYApiPermissiontodolambdaEndpointF706517AANYproxyEC7646F8:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - GreetingsHandlerE3BC49D5
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: EndpointEEF1FD8F
+            - /
+            - Ref: EndpointDeploymentStagedev8EA049F3
+            - /*/{proxy+}
+    Metadata:
+      aws:cdk:path: todo-lambda/Endpoint/Default/{proxy+}/ANY/ApiPermission.todolambdaEndpointF706517A.ANY..{proxy+}
+  EndpointproxyANYApiPermissionTesttodolambdaEndpointF706517AANYproxyD7CB4A35:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - GreetingsHandlerE3BC49D5
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: EndpointEEF1FD8F
+            - /test-invoke-stage/*/{proxy+}
+    Metadata:
+      aws:cdk:path: todo-lambda/Endpoint/Default/{proxy+}/ANY/ApiPermission.Test.todolambdaEndpointF706517A.ANY..{proxy+}
+  EndpointproxyANYC09721C5:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      HttpMethod: ANY
+      ResourceId:
+        Ref: Endpointproxy39E2174E
+      RestApiId:
+        Ref: EndpointEEF1FD8F
+      AuthorizationType: NONE
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - ":apigateway:"
+              - Ref: AWS::Region
+              - :lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                  - GreetingsHandlerE3BC49D5
+                  - Arn
+              - /invocations
+    Metadata:
+      aws:cdk:path: todo-lambda/Endpoint/Default/{proxy+}/ANY/Resource
+  EndpointANYApiPermissiontodolambdaEndpointF706517AANY359876D6:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - GreetingsHandlerE3BC49D5
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: EndpointEEF1FD8F
+            - /
+            - Ref: EndpointDeploymentStagedev8EA049F3
+            - /*/
+    Metadata:
+      aws:cdk:path: todo-lambda/Endpoint/Default/ANY/ApiPermission.todolambdaEndpointF706517A.ANY..
+  EndpointANYApiPermissionTesttodolambdaEndpointF706517AANYE2032280:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - GreetingsHandlerE3BC49D5
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: EndpointEEF1FD8F
+            - /test-invoke-stage/*/
+    Metadata:
+      aws:cdk:path: todo-lambda/Endpoint/Default/ANY/ApiPermission.Test.todolambdaEndpointF706517A.ANY..
+  EndpointANY485C938B:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      HttpMethod: ANY
+      ResourceId:
+        Fn::GetAtt:
+          - EndpointEEF1FD8F
+          - RootResourceId
+      RestApiId:
+        Ref: EndpointEEF1FD8F
+      AuthorizationType: NONE
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - ":apigateway:"
+              - Ref: AWS::Region
+              - :lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                  - GreetingsHandlerE3BC49D5
+                  - Arn
+              - /invocations
+    Metadata:
+      aws:cdk:path: todo-lambda/Endpoint/Default/ANY/Resource
+  Endpointtodos176EC032:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId:
+        Fn::GetAtt:
+          - EndpointEEF1FD8F
+          - RootResourceId
+      PathPart: todos
+      RestApiId:
+        Ref: EndpointEEF1FD8F
+    Metadata:
+      aws:cdk:path: todo-lambda/Endpoint/Default/todos/Resource
+  EndpointtodosGETApiPermissiontodolambdaEndpointF706517AGETtodosFF59E035:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - GetTodosB3CCFF10
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: EndpointEEF1FD8F
+            - /
+            - Ref: EndpointDeploymentStagedev8EA049F3
+            - /GET/todos
+    Metadata:
+      aws:cdk:path: todo-lambda/Endpoint/Default/todos/GET/ApiPermission.todolambdaEndpointF706517A.GET..todos
+  EndpointtodosGETApiPermissionTesttodolambdaEndpointF706517AGETtodosAA1674C0:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - GetTodosB3CCFF10
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: EndpointEEF1FD8F
+            - /test-invoke-stage/GET/todos
+    Metadata:
+      aws:cdk:path: todo-lambda/Endpoint/Default/todos/GET/ApiPermission.Test.todolambdaEndpointF706517A.GET..todos
+  EndpointtodosGET5442C6DC:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      HttpMethod: GET
+      ResourceId:
+        Ref: Endpointtodos176EC032
+      RestApiId:
+        Ref: EndpointEEF1FD8F
+      AuthorizationType: NONE
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - ":apigateway:"
+              - Ref: AWS::Region
+              - :lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                  - GetTodosB3CCFF10
+                  - Arn
+              - /invocations
+    Metadata:
+      aws:cdk:path: todo-lambda/Endpoint/Default/todos/GET/Resource
+  Endpointtodo0F6DA600:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId:
+        Fn::GetAtt:
+          - EndpointEEF1FD8F
+          - RootResourceId
+      PathPart: todo
+      RestApiId:
+        Ref: EndpointEEF1FD8F
+    Metadata:
+      aws:cdk:path: todo-lambda/Endpoint/Default/todo/Resource
+  EndpointtodotodoIdC519507C:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId:
+        Ref: Endpointtodo0F6DA600
+      PathPart: "{todoId}"
+      RestApiId:
+        Ref: EndpointEEF1FD8F
+    Metadata:
+      aws:cdk:path: todo-lambda/Endpoint/Default/todo/{todoId}/Resource
+  EndpointtodotodoIdGETApiPermissiontodolambdaEndpointF706517AGETtodotodoId630516D1:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - GetTodo9A7A828E
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: EndpointEEF1FD8F
+            - /
+            - Ref: EndpointDeploymentStagedev8EA049F3
+            - /GET/todo/{todoId}
+    Metadata:
+      aws:cdk:path: todo-lambda/Endpoint/Default/todo/{todoId}/GET/ApiPermission.todolambdaEndpointF706517A.GET..todo.{todoId}
+  EndpointtodotodoIdGETApiPermissionTesttodolambdaEndpointF706517AGETtodotodoId129F6E2C:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - GetTodo9A7A828E
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: EndpointEEF1FD8F
+            - /test-invoke-stage/GET/todo/{todoId}
+    Metadata:
+      aws:cdk:path: todo-lambda/Endpoint/Default/todo/{todoId}/GET/ApiPermission.Test.todolambdaEndpointF706517A.GET..todo.{todoId}
+  EndpointtodotodoIdGET666D8236:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      HttpMethod: GET
+      ResourceId:
+        Ref: EndpointtodotodoIdC519507C
+      RestApiId:
+        Ref: EndpointEEF1FD8F
+      AuthorizationType: NONE
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - ":apigateway:"
+              - Ref: AWS::Region
+              - :lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                  - GetTodo9A7A828E
+                  - Arn
+              - /invocations
+    Metadata:
+      aws:cdk:path: todo-lambda/Endpoint/Default/todo/{todoId}/GET/Resource
+  EndpointtodotodoIdDELETEApiPermissiontodolambdaEndpointF706517ADELETEtodotodoId7A1A0ED6:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - DeleteTodo83B93704
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: EndpointEEF1FD8F
+            - /
+            - Ref: EndpointDeploymentStagedev8EA049F3
+            - /DELETE/todo/{todoId}
+    Metadata:
+      aws:cdk:path: todo-lambda/Endpoint/Default/todo/{todoId}/DELETE/ApiPermission.todolambdaEndpointF706517A.DELETE..todo.{todoId}
+  EndpointtodotodoIdDELETEApiPermissionTesttodolambdaEndpointF706517ADELETEtodotodoId50F0B694:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - DeleteTodo83B93704
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: EndpointEEF1FD8F
+            - /test-invoke-stage/DELETE/todo/{todoId}
+    Metadata:
+      aws:cdk:path: todo-lambda/Endpoint/Default/todo/{todoId}/DELETE/ApiPermission.Test.todolambdaEndpointF706517A.DELETE..todo.{todoId}
+  EndpointtodotodoIdDELETEEA229534:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      HttpMethod: DELETE
+      ResourceId:
+        Ref: EndpointtodotodoIdC519507C
+      RestApiId:
+        Ref: EndpointEEF1FD8F
+      AuthorizationType: NONE
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - ":apigateway:"
+              - Ref: AWS::Region
+              - :lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                  - DeleteTodo83B93704
+                  - Arn
+              - /invocations
+    Metadata:
+      aws:cdk:path: todo-lambda/Endpoint/Default/todo/{todoId}/DELETE/Resource
+  EndpointtodonewF6D45752:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId:
+        Ref: Endpointtodo0F6DA600
+      PathPart: new
+      RestApiId:
+        Ref: EndpointEEF1FD8F
+    Metadata:
+      aws:cdk:path: todo-lambda/Endpoint/Default/todo/new/Resource
+  EndpointtodonewPUTApiPermissiontodolambdaEndpointF706517APUTtodonew87E3ED42:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - PutTodo3CB5E032
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: EndpointEEF1FD8F
+            - /
+            - Ref: EndpointDeploymentStagedev8EA049F3
+            - /PUT/todo/new
+    Metadata:
+      aws:cdk:path: todo-lambda/Endpoint/Default/todo/new/PUT/ApiPermission.todolambdaEndpointF706517A.PUT..todo.new
+  EndpointtodonewPUTApiPermissionTesttodolambdaEndpointF706517APUTtodonew45FA99F6:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - PutTodo3CB5E032
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: EndpointEEF1FD8F
+            - /test-invoke-stage/PUT/todo/new
+    Metadata:
+      aws:cdk:path: todo-lambda/Endpoint/Default/todo/new/PUT/ApiPermission.Test.todolambdaEndpointF706517A.PUT..todo.new
+  EndpointtodonewPUT7841568F:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      HttpMethod: PUT
+      ResourceId:
+        Ref: EndpointtodonewF6D45752
+      RestApiId:
+        Ref: EndpointEEF1FD8F
+      AuthorizationType: NONE
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - ":apigateway:"
+              - Ref: AWS::Region
+              - :lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                  - PutTodo3CB5E032
+                  - Arn
+              - /invocations
+    Metadata:
+      aws:cdk:path: todo-lambda/Endpoint/Default/todo/new/PUT/Resource
+  ToDostable113D2DAB:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+    UpdateReplacePolicy: Retain
+    DeletionPolicy: Retain
+    Metadata:
+      aws:cdk:path: todo-lambda/ToDos_table/Resource
+  GetTodosServiceRole0E92CF0F:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: todo-lambda/GetTodos/ServiceRole/Resource
+  GetTodosServiceRoleDefaultPolicy197A5DAF:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - dynamodb:BatchGetItem
+              - dynamodb:GetRecords
+              - dynamodb:GetShardIterator
+              - dynamodb:Query
+              - dynamodb:GetItem
+              - dynamodb:Scan
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - ToDostable113D2DAB
+                  - Arn
+              - Ref: AWS::NoValue
+        Version: "2012-10-17"
+      PolicyName: GetTodosServiceRoleDefaultPolicy197A5DAF
+      Roles:
+        - Ref: GetTodosServiceRole0E92CF0F
+    Metadata:
+      aws:cdk:path: todo-lambda/GetTodos/ServiceRole/DefaultPolicy/Resource
+  GetTodosB3CCFF10:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket:
+          Ref: AssetParameters4eae9a3a9376973c83a7918f98c733f02759562997922df7957cd2e72355c143S3Bucket70D48462
+        S3Key:
+          Fn::Join:
+            - ""
+            - - Fn::Select:
+                  - 0
+                  - Fn::Split:
+                      - "||"
+                      - Ref: AssetParameters4eae9a3a9376973c83a7918f98c733f02759562997922df7957cd2e72355c143S3VersionKey132F2472
+              - Fn::Select:
+                  - 1
+                  - Fn::Split:
+                      - "||"
+                      - Ref: AssetParameters4eae9a3a9376973c83a7918f98c733f02759562997922df7957cd2e72355c143S3VersionKey132F2472
+      Handler: todos.get
+      Role:
+        Fn::GetAtt:
+          - GetTodosServiceRole0E92CF0F
+          - Arn
+      Runtime: python3.7
+      Environment:
+        Variables:
+          TABLE_NAME:
+            Ref: ToDostable113D2DAB
+      MemorySize: 128
+    DependsOn:
+      - GetTodosServiceRoleDefaultPolicy197A5DAF
+      - GetTodosServiceRole0E92CF0F
+    Metadata:
+      aws:cdk:path: todo-lambda/GetTodos/Resource
+      aws:asset:path: /Users/hfv/Desktop/dev/dev-projects/todo-lambda/lambda
+      aws:asset:property: Code
+  GetTodoServiceRoleD714A25E:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: todo-lambda/GetTodo/ServiceRole/Resource
+  GetTodoServiceRoleDefaultPolicy3CDFE886:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - dynamodb:BatchGetItem
+              - dynamodb:GetRecords
+              - dynamodb:GetShardIterator
+              - dynamodb:Query
+              - dynamodb:GetItem
+              - dynamodb:Scan
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - ToDostable113D2DAB
+                  - Arn
+              - Ref: AWS::NoValue
+        Version: "2012-10-17"
+      PolicyName: GetTodoServiceRoleDefaultPolicy3CDFE886
+      Roles:
+        - Ref: GetTodoServiceRoleD714A25E
+    Metadata:
+      aws:cdk:path: todo-lambda/GetTodo/ServiceRole/DefaultPolicy/Resource
+  GetTodo9A7A828E:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket:
+          Ref: AssetParameters4eae9a3a9376973c83a7918f98c733f02759562997922df7957cd2e72355c143S3Bucket70D48462
+        S3Key:
+          Fn::Join:
+            - ""
+            - - Fn::Select:
+                  - 0
+                  - Fn::Split:
+                      - "||"
+                      - Ref: AssetParameters4eae9a3a9376973c83a7918f98c733f02759562997922df7957cd2e72355c143S3VersionKey132F2472
+              - Fn::Select:
+                  - 1
+                  - Fn::Split:
+                      - "||"
+                      - Ref: AssetParameters4eae9a3a9376973c83a7918f98c733f02759562997922df7957cd2e72355c143S3VersionKey132F2472
+      Handler: todo.get
+      Role:
+        Fn::GetAtt:
+          - GetTodoServiceRoleD714A25E
+          - Arn
+      Runtime: python3.7
+      Environment:
+        Variables:
+          TABLE_NAME:
+            Ref: ToDostable113D2DAB
+      MemorySize: 128
+    DependsOn:
+      - GetTodoServiceRoleDefaultPolicy3CDFE886
+      - GetTodoServiceRoleD714A25E
+    Metadata:
+      aws:cdk:path: todo-lambda/GetTodo/Resource
+      aws:asset:path: /Users/hfv/Desktop/dev/dev-projects/todo-lambda/lambda
+      aws:asset:property: Code
+  PutTodoServiceRole6D95A665:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: todo-lambda/PutTodo/ServiceRole/Resource
+  PutTodoServiceRoleDefaultPolicy3406E895:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - dynamodb:BatchWriteItem
+              - dynamodb:PutItem
+              - dynamodb:UpdateItem
+              - dynamodb:DeleteItem
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - ToDostable113D2DAB
+                  - Arn
+              - Ref: AWS::NoValue
+        Version: "2012-10-17"
+      PolicyName: PutTodoServiceRoleDefaultPolicy3406E895
+      Roles:
+        - Ref: PutTodoServiceRole6D95A665
+    Metadata:
+      aws:cdk:path: todo-lambda/PutTodo/ServiceRole/DefaultPolicy/Resource
+  PutTodo3CB5E032:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket:
+          Ref: AssetParameters4eae9a3a9376973c83a7918f98c733f02759562997922df7957cd2e72355c143S3Bucket70D48462
+        S3Key:
+          Fn::Join:
+            - ""
+            - - Fn::Select:
+                  - 0
+                  - Fn::Split:
+                      - "||"
+                      - Ref: AssetParameters4eae9a3a9376973c83a7918f98c733f02759562997922df7957cd2e72355c143S3VersionKey132F2472
+              - Fn::Select:
+                  - 1
+                  - Fn::Split:
+                      - "||"
+                      - Ref: AssetParameters4eae9a3a9376973c83a7918f98c733f02759562997922df7957cd2e72355c143S3VersionKey132F2472
+      Handler: todo.put
+      Role:
+        Fn::GetAtt:
+          - PutTodoServiceRole6D95A665
+          - Arn
+      Runtime: python3.7
+      Environment:
+        Variables:
+          TABLE_NAME:
+            Ref: ToDostable113D2DAB
+      MemorySize: 128
+    DependsOn:
+      - PutTodoServiceRoleDefaultPolicy3406E895
+      - PutTodoServiceRole6D95A665
+    Metadata:
+      aws:cdk:path: todo-lambda/PutTodo/Resource
+      aws:asset:path: /Users/hfv/Desktop/dev/dev-projects/todo-lambda/lambda
+      aws:asset:property: Code
+  DeleteTodoServiceRoleD6A5BBE6:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: todo-lambda/DeleteTodo/ServiceRole/Resource
+  DeleteTodoServiceRoleDefaultPolicyF562E13D:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - dynamodb:BatchWriteItem
+              - dynamodb:PutItem
+              - dynamodb:UpdateItem
+              - dynamodb:DeleteItem
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - ToDostable113D2DAB
+                  - Arn
+              - Ref: AWS::NoValue
+        Version: "2012-10-17"
+      PolicyName: DeleteTodoServiceRoleDefaultPolicyF562E13D
+      Roles:
+        - Ref: DeleteTodoServiceRoleD6A5BBE6
+    Metadata:
+      aws:cdk:path: todo-lambda/DeleteTodo/ServiceRole/DefaultPolicy/Resource
+  DeleteTodo83B93704:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket:
+          Ref: AssetParameters4eae9a3a9376973c83a7918f98c733f02759562997922df7957cd2e72355c143S3Bucket70D48462
+        S3Key:
+          Fn::Join:
+            - ""
+            - - Fn::Select:
+                  - 0
+                  - Fn::Split:
+                      - "||"
+                      - Ref: AssetParameters4eae9a3a9376973c83a7918f98c733f02759562997922df7957cd2e72355c143S3VersionKey132F2472
+              - Fn::Select:
+                  - 1
+                  - Fn::Split:
+                      - "||"
+                      - Ref: AssetParameters4eae9a3a9376973c83a7918f98c733f02759562997922df7957cd2e72355c143S3VersionKey132F2472
+      Handler: todo.delete
+      Role:
+        Fn::GetAtt:
+          - DeleteTodoServiceRoleD6A5BBE6
+          - Arn
+      Runtime: python3.7
+      Environment:
+        Variables:
+          TABLE_NAME:
+            Ref: ToDostable113D2DAB
+      MemorySize: 128
+    DependsOn:
+      - DeleteTodoServiceRoleDefaultPolicyF562E13D
+      - DeleteTodoServiceRoleD6A5BBE6
+    Metadata:
+      aws:cdk:path: todo-lambda/DeleteTodo/Resource
+      aws:asset:path: /Users/hfv/Desktop/dev/dev-projects/todo-lambda/lambda
+      aws:asset:property: Code
+  CDKMetadata:
+    Type: AWS::CDK::Metadata
+    Properties:
+      Modules: aws-cdk=1.39.0,@aws-cdk/assets=1.39.0,@aws-cdk/aws-apigateway=1.39.0,@aws-cdk/aws-applicationautoscaling=1.39.0,@aws-cdk/aws-autoscaling-common=1.39.0,@aws-cdk/aws-certificatemanager=1.39.0,@aws-cdk/aws-cloudformation=1.39.0,@aws-cdk/aws-cloudwatch=1.39.0,@aws-cdk/aws-dynamodb=1.39.0,@aws-cdk/aws-ec2=1.39.0,@aws-cdk/aws-elasticloadbalancingv2=1.39.0,@aws-cdk/aws-events=1.39.0,@aws-cdk/aws-iam=1.39.0,@aws-cdk/aws-kms=1.39.0,@aws-cdk/aws-lambda=1.39.0,@aws-cdk/aws-logs=1.39.0,@aws-cdk/aws-route53=1.39.0,@aws-cdk/aws-s3=1.39.0,@aws-cdk/aws-s3-assets=1.39.0,@aws-cdk/aws-sns=1.39.0,@aws-cdk/aws-sqs=1.39.0,@aws-cdk/aws-ssm=1.39.0,@aws-cdk/cdk-assets-schema=1.39.0,@aws-cdk/cloud-assembly-schema=1.39.0,@aws-cdk/core=1.39.0,@aws-cdk/custom-resources=1.39.0,@aws-cdk/cx-api=1.39.0,@aws-cdk/region-info=1.39.0,jsii-runtime=Python/3.7.2
+    Condition: CDKMetadataAvailable
+Parameters:
+  AssetParameters4eae9a3a9376973c83a7918f98c733f02759562997922df7957cd2e72355c143S3Bucket70D48462:
+    Type: String
+    Description: S3 bucket for asset "4eae9a3a9376973c83a7918f98c733f02759562997922df7957cd2e72355c143"
+  AssetParameters4eae9a3a9376973c83a7918f98c733f02759562997922df7957cd2e72355c143S3VersionKey132F2472:
+    Type: String
+    Description: S3 key for asset version "4eae9a3a9376973c83a7918f98c733f02759562997922df7957cd2e72355c143"
+  AssetParameters4eae9a3a9376973c83a7918f98c733f02759562997922df7957cd2e72355c143ArtifactHash4A7450DE:
+    Type: String
+    Description: Artifact hash for asset "4eae9a3a9376973c83a7918f98c733f02759562997922df7957cd2e72355c143"
+Outputs:
+  Endpoint8024A810:
+    Value:
+      Fn::Join:
+        - ""
+        - - https://
+          - Ref: EndpointEEF1FD8F
+          - .execute-api.
+          - Ref: AWS::Region
+          - "."
+          - Ref: AWS::URLSuffix
+          - /
+          - Ref: EndpointDeploymentStagedev8EA049F3
+          - /
+Conditions:
+  CDKMetadataAvailable:
+    Fn::Or:
+      - Fn::Or:
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-east-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-northeast-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-northeast-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-south-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-southeast-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-southeast-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ca-central-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - cn-north-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - cn-northwest-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-central-1
+      - Fn::Or:
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-north-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-west-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-west-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-west-3
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - me-south-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - sa-east-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-east-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-east-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-west-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-west-2
+
