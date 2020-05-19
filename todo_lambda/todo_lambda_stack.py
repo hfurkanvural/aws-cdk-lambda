@@ -2,7 +2,7 @@ from aws_cdk import (
     core,
     aws_lambda as _lambda,
     aws_apigateway as api_gateway,
-    aws_dynamodb as dynamodb
+    aws_dynamodb as aws_dynamodb
 )
 class TodoLambdaStack(core.Stack):
 
@@ -20,10 +20,10 @@ class TodoLambdaStack(core.Stack):
 
         # create dynamo table
         demo_table = aws_dynamodb.Table(
-            self, "demo_table",
+            self, "ToDos_table",
             partition_key=aws_dynamodb.Attribute(
                 name="id",
-                type=aws_dynamodb.AttributeType.NUMBER
+                type=aws_dynamodb.AttributeType.STRING
             )
         )
         get_todos_handler = _lambda.Function(
@@ -34,7 +34,7 @@ class TodoLambdaStack(core.Stack):
             memory_size=128
         )
         get_todos_handler.add_environment("TABLE_NAME", demo_table.table_name)
-        demo_table.grant_write_data(get_todos_handler)
+        demo_table.grant_read_data(get_todos_handler)
 
         get_todos_integration = api_gateway.LambdaIntegration(get_todos_handler)
 
@@ -51,7 +51,7 @@ class TodoLambdaStack(core.Stack):
         )
 
         get_todo_handler.add_environment("TABLE_NAME", demo_table.table_name)
-        demo_table.grant_write_data(get_todo_handler)
+        demo_table.grant_read_data(get_todo_handler)
 
         put_todo_handler = _lambda.Function(
             self, 'PutTodo',
