@@ -17,3 +17,12 @@ def respond_not_found(body):
         },
         'body': json.dumps(body)
     }
+
+def respond_error():
+    return {
+        'statusCode': 500,
+        'headers': {
+            'Content-Type': 'text/json'
+        },
+        'body': {"error":"Unknown error!"}
+    }
