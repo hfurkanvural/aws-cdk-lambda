@@ -33,7 +33,7 @@ def put(event, context):
     response = table.put_item(
             Item={
                 'id': id,
-                'task': data['todo']
+                'task': data['task']
             }
         )
     if response["ResponseMetadata"]["HTTPStatusCode"] == 200:
